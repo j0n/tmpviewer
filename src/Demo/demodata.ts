@@ -7841,13 +7841,15 @@ export const convertDemoRoomsToPixPolygons = (rooms: IDemoRoom[]): IPixPolygon[]
 
 export const convertRoomGridsToPixPaths = (rooms: IDemoRoomWithDevices[]): IPixPath[] => {
   return rooms.map(room => {
-    return {
-      id: room._id,
-      points: room.grid,
-      strokeColor: "#000",
-      strokeWidth: "1px",
-    }
-  })
+    return room.grid.map((line, index) => {
+      return {
+        id: `${room._id}-${index}`,
+        points: line,
+        strokeColor: "#000",
+        strokeWidth: "1px",
+      }
+    })
+  }).flat(1);
 }
 
 export const convertRoomDevicesToPixPolygons = (rooms: IDemoRoomWithDevices[]): IPixPolygon[] => {

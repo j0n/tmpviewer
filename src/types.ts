@@ -16,7 +16,7 @@ export interface IPixPolygon {
 
 export interface IPixPath {
   id: string;
-  points: [[number, number], [number, number]][];
+  points: number[][];
   strokeColor: string | undefined;
   strokeWidth: string | undefined;
   tooltip?: string | undefined;

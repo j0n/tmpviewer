@@ -20,7 +20,7 @@ function Demo() {
 
   return (
     <>
-      <PixBimViewer paths={paths} polygons={polygons} />
+      <PixBimViewer paths={paths} polygons={polygons} onClick={(id) => console.log("clicked", id)}/>
     </>
   )
 }
