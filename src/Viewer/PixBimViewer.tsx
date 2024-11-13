@@ -5,7 +5,7 @@ import { Stage, Container } from '@pixi/react';
 
 import { getBoundingBox } from './utils/geo.ts';
 import { invertScalePoint, scalePoint } from './utils/pixbim-scale.ts';
-import { IPixPath, IPixPolygon } from '../types.ts';
+import { IPixPath, IPixPolygon } from './types.ts';
 import PixBimPolygon from './Components/PixBimPolygon.tsx';
 import PixBimPath from './Components/PixBimPath.tsx';
 import Viewport from './Components/PixBimViewport.tsx';

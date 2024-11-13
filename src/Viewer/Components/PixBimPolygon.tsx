@@ -4,7 +4,7 @@ import { Graphics } from '@pixi/react';
 import { FederatedPointerEvent, Texture } from 'pixi.js';
 import type { Graphics as GraphicsType } from 'pixi.js';
 
-import { IPixPolygon } from '../../types.ts';
+import { IPixPolygon } from '../types.ts';
 
 interface PixBimPolygonProps {
   polygon: IPixPolygon

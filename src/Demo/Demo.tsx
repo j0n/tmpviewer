@@ -1,6 +1,6 @@
 import '../App.css'
 import PixBimViewer from '../Viewer/PixBimViewer.tsx';
-import { IPixPath, IPixPolygon } from '../types.ts';
+import { IPixPath, IPixPolygon } from '../Viewer/types.ts';
 import {
   convertDemoRoomsToPixPolygons, convertRoomDevicesToPixPolygons,
   convertRoomGridsToPixPaths,

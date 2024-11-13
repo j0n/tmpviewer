@@ -36,7 +36,6 @@ const PixiComponentViewport = PixiComponent("Viewport", {
     const { boundingBox: oldBoundingBox } = oldProps;
     if (boundingBox && boundingBox !== oldBoundingBox) {
       const { x, y, width, height } = boundingBox;
-      // instance.moveCenter(x - (width/2), y - (height/2))
       instance.ensureVisible(x, y, width, height, true);
     }
   }

@@ -1,4 +1,4 @@
-import { IPixPath, IPixPolygon } from '../types.ts';
+import { IPixPath, IPixPolygon } from '../Viewer/types.ts';
 
 export interface IDemoRoom {
   fileName: string;
