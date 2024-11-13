@@ -15,7 +15,7 @@ interface PixBimPathProps {
 const PixBimPath: React.FC<PixBimPathProps> = ({ path }) => {
 
   const [strokeColor] = useState(path.strokeColor);
-  const strokeWidth = typeof path.strokeWidth === "string" ? parseInt(path.strokeWidth.replace("px", "")) : path.strokeWidth;
+  const strokeWidth = typeof path.strokeWidth === "string" ? parseFloat(path.strokeWidth.replace("px", "")) : path.strokeWidth;
 
   const draw = useCallback((g: GraphicsType) => {
     g.clear();

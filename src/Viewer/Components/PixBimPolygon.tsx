@@ -18,13 +18,13 @@ interface PixBimPolygonProps {
 }
 
 const PixBimPolygon: React.FC<PixBimPolygonProps> = ({ polygon, onClick }) => {
-  const [fillColor, setFillColor] = useState(polygon.fillColor);
+  const [fillColor, setFillColor] = useState(polygon.fillColor || 'fafafa');
   const [strokeColor, setStrokeColor] = useState(polygon.strokeColor);
-  const strokeWidth = typeof polygon.strokeWidth === "string" ? parseInt(polygon.strokeWidth.replace("px", "")) : polygon.strokeWidth;
+  const strokeWidth = typeof polygon.strokeWidth === "string" ? parseFloat(polygon.strokeWidth.replace("px", "")) : polygon.strokeWidth;
 
   const draw = useCallback((g: GraphicsType) => {
     g.clear();
-    g.lineTextureStyle({ texture:Texture.WHITE, width: strokeWidth, color:strokeColor })
+    g.lineTextureStyle({ texture:Texture.WHITE, width: strokeWidth, color: strokeColor })
     g.beginFill(fillColor);
     const points = polygon.points.flat(1)
     if (polygon.isMoveable) {
@@ -46,7 +46,7 @@ const PixBimPolygon: React.FC<PixBimPolygonProps> = ({ polygon, onClick }) => {
   }
 
   const onPointerOut = () => {
-    setFillColor(polygon.fillColor);
+    setFillColor(polygon.fillColor || 'fafafa');
     setStrokeColor(polygon.strokeColor);
   }
 

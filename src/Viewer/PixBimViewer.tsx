@@ -1,14 +1,14 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 
-import { FederatedPointerEvent, Graphics, IPointData} from 'pixi.js';
+import { FederatedPointerEvent, IPointData, DisplayObject } from 'pixi.js';
 import { Stage, Container } from '@pixi/react';
 
-import { getBoundingBox } from '../utils/geo.ts';
+import { getBoundingBox } from './utils/geo.ts';
+import { invertScalePoint, scalePoint } from './utils/pixbim-scale.ts';
 import { IPixPath, IPixPolygon } from '../types.ts';
 import PixBimPolygon from './Components/PixBimPolygon.tsx';
 import PixBimPath from './Components/PixBimPath.tsx';
 import Viewport from './Components/PixBimViewport.tsx';
-import { invertScalePoint, scalePoint } from '../utils/pixbim-scale.ts';
 
 interface PixBimViewerProps {
   polygons: IPixPolygon[]
@@ -19,6 +19,9 @@ interface PixBimViewerProps {
     color: string,
     size: number,
   }
+}
+interface DragObject extends DisplayObject {
+  polygon: IPixPolygon
 }
 
 const SCALE = 10;
@@ -32,7 +35,9 @@ const PixBimViewer: React.FC<PixBimViewerProps> = (props) => {
   } = props
   const containerRef = useRef<HTMLDivElement>(null);
   const [, setLoaded] = useState(false)
-  const [x, y] = polygons[0].points[0];
+  const firstPolygon = polygons.length > 0 ? polygons[0] : { points: [[0,0]] }
+  const [firstPoint = [0, 0]] = firstPolygon.points;
+  const [x, y] = firstPoint;
 
   useEffect(() => {
     offSet = { x, y }
@@ -40,17 +45,27 @@ const PixBimViewer: React.FC<PixBimViewerProps> = (props) => {
   }, []);
 
   const scaledItems = useCallback(() => {
+    const ids: Map<string, number> = new Map();
     const scaledPaths = paths.map(path => {
       const points = path.points.map(p => scalePoint(p, offSet, SCALE))
+      const { id } = path;
+
+      const count = ids.get(id) || 0;
+      ids.set(id, count + 1);
       return {
         ...path,
+        id: path.id + count,
         points,
       }
     })
     const scaledPolygons = polygons.map(polygon => {
       const points = polygon.points.map(p => scalePoint(p, offSet, SCALE))
+      const { id } = polygon;
+      const count = ids.get(id) || 0;
+      ids.set(id, count + 1);
       return {
         ...polygon,
+        id: `${id}-${count}`,
         points,
       }
     })
@@ -72,7 +87,7 @@ const PixBimViewer: React.FC<PixBimViewerProps> = (props) => {
   }, []);
 
   let dragPoint: IPointData = { x: 0, y: 0 }
-  let dragTarget: Graphics|undefined = undefined;
+  let dragTarget: DragObject|undefined = undefined;
 
   const onPolygonPointerDown = (e: FederatedPointerEvent, polygon: IPixPolygon) => {
     if (onClick) {
@@ -80,7 +95,7 @@ const PixBimViewer: React.FC<PixBimViewerProps> = (props) => {
     }
     if (polygon.isMoveable) {
       e.stopPropagation();
-      const target = e.currentTarget as Graphics;
+      const target = e.currentTarget as DragObject;
       target.polygon = polygon
       dragPoint = e.getLocalPosition(target.parent);
       dragPoint.x -= target.x;

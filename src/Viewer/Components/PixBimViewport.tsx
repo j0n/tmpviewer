@@ -17,9 +17,6 @@ export interface PixiComponentViewportProps extends ViewportProps {
 const PixiComponentViewport = PixiComponent("Viewport", {
   create: (props: PixiComponentViewportProps) => {
     const { app, onpointermove, onpointerup } = props
-    if (window.location.host.includes("localhost")) {
-      globalThis.__PIXI_APP__ = app;
-    }
     // app.renderer.events.domElement = app.view as any;
     const viewport = new PixiViewport({
         events: app.renderer.events,
