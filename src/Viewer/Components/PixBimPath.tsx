@@ -4,7 +4,7 @@ import { extend } from '@pixi/react';
 import type { Graphics as GraphicsType } from 'pixi.js';
 import { Texture, Graphics } from 'pixi.js';
 
-import { IPixPath } from '../types.ts';
+import { IPixPath } from '../types';
 
 interface PixBimPathProps {
   path: IPixPath,

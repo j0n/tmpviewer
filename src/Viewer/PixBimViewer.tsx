@@ -4,12 +4,12 @@ import { FederatedPointerEvent, Container } from 'pixi.js';
 import type { PointData  } from 'pixi.js';
 import { Application, extend } from '@pixi/react'
 
-import { getBoundingBox } from './utils/geo.ts';
-import { invertScalePoint, scalePoint } from './utils/pixbim-scale.ts';
-import { IPixPath, IPixPolygon } from './types.ts';
-import PixBimPolygon from './Components/PixBimPolygon.tsx';
-import PixBimPath from './Components/PixBimPath.tsx';
-import Viewport from './Components/PixBimViewport.tsx';
+import { getBoundingBox } from './utils/geo';
+import { invertScalePoint, scalePoint } from './utils/pixbim-scale';
+import { IPixPath, IPixPolygon } from './types';
+import PixBimPolygon from './Components/PixBimPolygon';
+import PixBimPath from './Components/PixBimPath';
+import Viewport from './Components/PixBimViewport';
 
 interface PixBimViewerProps {
   polygons: IPixPolygon[]

@@ -5,7 +5,7 @@ import { extend } from '@pixi/react'
 
 import type { Graphics as GraphicsType } from 'pixi.js';
 
-import { IPixPolygon } from '../types.ts';
+import { IPixPolygon } from '../types';
 extend({ Graphics })
 
 interface PixBimPolygonProps {
