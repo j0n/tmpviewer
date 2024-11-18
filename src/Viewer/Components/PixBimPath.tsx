@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
 
-import { Graphics } from '@pixi/react';
+import { extend } from '@pixi/react';
 import type { Graphics as GraphicsType } from 'pixi.js';
-import { Texture } from 'pixi.js';
+import { Texture, Graphics } from 'pixi.js';
 
 import { IPixPath } from '../types.ts';
 
@@ -10,6 +10,7 @@ interface PixBimPathProps {
   path: IPixPath,
 }
 
+extend({ Graphics })
 
 
 const PixBimPath: React.FC<PixBimPathProps> = ({ path }) => {
@@ -19,7 +20,7 @@ const PixBimPath: React.FC<PixBimPathProps> = ({ path }) => {
 
   const draw = useCallback((g: GraphicsType) => {
     g.clear();
-    g.lineTextureStyle({ texture:Texture.WHITE, width: strokeWidth, color:strokeColor })
+    g.stroke({ texture:Texture.WHITE, width: strokeWidth, color:strokeColor })
     
     const points = path.points;
     g.moveTo(points[0][0], points[0][1]);
@@ -27,7 +28,6 @@ const PixBimPath: React.FC<PixBimPathProps> = ({ path }) => {
       const [x, y] = point;
       g.lineTo(x, y);
     })
-    g.endFill();
   }, [path, strokeColor, strokeWidth]);
   ;
 
@@ -41,10 +41,10 @@ const PixBimPath: React.FC<PixBimPathProps> = ({ path }) => {
   }
 
   return <>
-    <Graphics
+    <graphics
       draw={draw}
-      pointerover={onPointerOver}
-      pointerout={onPointerOut}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut}
       />
   </>
 };

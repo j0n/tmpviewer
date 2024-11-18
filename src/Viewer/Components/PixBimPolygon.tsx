@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from 'react';
 
-import { Graphics } from '@pixi/react';
-import { FederatedPointerEvent, Texture } from 'pixi.js';
+import { FederatedPointerEvent, Graphics, Texture } from 'pixi.js';
+import { extend } from '@pixi/react'
+
 import type { Graphics as GraphicsType } from 'pixi.js';
 
 import { IPixPolygon } from '../types.ts';
+extend({ Graphics })
 
 interface PixBimPolygonProps {
   polygon: IPixPolygon
@@ -24,17 +26,16 @@ const PixBimPolygon: React.FC<PixBimPolygonProps> = ({ polygon, onClick }) => {
 
   const draw = useCallback((g: GraphicsType) => {
     g.clear();
-    g.lineTextureStyle({ texture:Texture.WHITE, width: strokeWidth, color: strokeColor })
-    g.beginFill(fillColor);
+    g.setFillStyle({ color: fillColor });
     const points = polygon.points.flat(1)
     if (polygon.isMoveable) {
       g.cursor = "pointer";
     }
-    g.drawPolygon(points)
+    g.poly(points)
     g.eventMode = "static";
-    g.endFill();
+    g.stroke({ color: strokeColor, width: strokeWidth, texture: Texture.WHITE });
+    g.fill();
   }, [polygon, strokeColor,fillColor, strokeWidth]);
-  ;
 
   const onPointerDown = (e: FederatedPointerEvent) => {
     if (onClick) {
@@ -51,11 +52,11 @@ const PixBimPolygon: React.FC<PixBimPolygonProps> = ({ polygon, onClick }) => {
   }
 
   return <>
-    <Graphics
+    <graphics
       draw={draw}
-      pointerdown={onPointerDown}
-      pointerover={onPointerOver}
-      pointerout={onPointerOut}
+      onPointerDown={onPointerDown}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut}
       />
   </>
 };

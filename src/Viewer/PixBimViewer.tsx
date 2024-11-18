@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 
-import { FederatedPointerEvent, IPointData, DisplayObject } from 'pixi.js';
-import { Stage, Container } from '@pixi/react';
+import { FederatedPointerEvent, Container } from 'pixi.js';
+import type { PointData  } from 'pixi.js';
+import { Application, extend } from '@pixi/react'
 
 import { getBoundingBox } from './utils/geo.ts';
 import { invertScalePoint, scalePoint } from './utils/pixbim-scale.ts';
@@ -20,9 +21,11 @@ interface PixBimViewerProps {
     size: number,
   }
 }
-interface DragObject extends DisplayObject {
-  polygon: IPixPolygon
+interface DragObject extends Container {
+  polygon?: IPixPolygon
 }
+
+extend({ Container })
 
 const SCALE = 10;
 let offSet = {x: 0, y: 0 };
@@ -86,7 +89,7 @@ const PixBimViewer: React.FC<PixBimViewerProps> = (props) => {
     setLoaded(true)
   }, []);
 
-  let dragPoint: IPointData = { x: 0, y: 0 }
+  let dragPoint: PointData = { x: 0, y: 0 }
   let dragTarget: DragObject|undefined = undefined;
 
   const onPolygonPointerDown = (e: FederatedPointerEvent, polygon: IPixPolygon) => {
@@ -96,6 +99,7 @@ const PixBimViewer: React.FC<PixBimViewerProps> = (props) => {
     if (polygon.isMoveable) {
       e.stopPropagation();
       const target = e.currentTarget as DragObject;
+      console.log({target});
       target.polygon = polygon
       dragPoint = e.getLocalPosition(target.parent);
       dragPoint.x -= target.x;
@@ -119,9 +123,11 @@ const PixBimViewer: React.FC<PixBimViewerProps> = (props) => {
       dragTarget = undefined;
       const movedPosition = newPosition;
       const newOffSet = { x: offSet.x + movedPosition.x, y: offSet.y + movedPosition.y }
-      
+      if (!polygon) {
+        return;
+      }
       const points = polygon.points.map((p: number[])  => invertScalePoint(p, newOffSet, SCALE))
-      if (onDragAndDrop) {
+      if (onDragAndDrop && polygon) {
         onDragAndDrop(polygon.id, points)
       }
     }
@@ -131,12 +137,10 @@ const PixBimViewer: React.FC<PixBimViewerProps> = (props) => {
   return (
     <div style={{width: "100%", height: "100%", display: "flex"}} ref={containerRef}>
       {containerRef.current &&
-        <Stage
-          options={{
-            antialias: true,
-            background: 0xffffff,
-            resizeTo: containerRef.current,
-          }}
+        <Application
+          antialias={true}
+          background={0xffffff}
+          resizeTo={containerRef}
           width={containerRef.current?.clientWidth ?? window.innerWidth}
           height={containerRef.current?.clientHeight ?? window.innerHeight}
         >
@@ -145,14 +149,14 @@ const PixBimViewer: React.FC<PixBimViewerProps> = (props) => {
             onpointermove={onPointerMoveOnStage}
             onpointerup={onPointerUpOnStage}
             >
-            <Container>
+            <container>
               { scaledPolygons.map((polygon: IPixPolygon) => 
                 <PixBimPolygon onDragAndDrop={onDragAndDrop} onClick={onPolygonPointerDown} polygon={polygon} key={polygon.id} />)
               }
               { scaledPaths.map((path: IPixPath) => <PixBimPath path={path} key={path.id} />) }
-            </Container>
+            </container>
           </Viewport>
-        </Stage>
+        </Application>
       }
     </div>
   )

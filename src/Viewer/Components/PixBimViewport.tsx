@@ -1,19 +1,33 @@
-import React from "react";
-import * as PIXI from "pixi.js";
-import { useApp, PixiComponent } from '@pixi/react'
-import { Viewport as PixiViewport } from "pixi-viewport";
+import React, { useRef, useEffect } from 'react';
+import type { Application, FederatedPointerEvent } from 'pixi.js';
+import type { Viewport as ViewportType } from 'pixi-viewport';
+// @ts-expect-error no expeted member as pixi/react is in beta
+import type { PixiReactElementProps } from '@pixi/react';
+import { useApplication, extend } from '@pixi/react'
+import { Viewport } from "pixi-viewport";
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      viewport: PixiReactElementProps<typeof ViewportType>;
+    }
+  }
+}
+
 
 export interface ViewportProps {
   children?: React.ReactNode;
   boundingBox?: { x: number, y: number, width: number, height: number };
-  onpointermove?: (e: PIXI.FederatedPointerEvent) => void;
-  onpointerup?: (e: PIXI.FederatedPointerEvent) => void;
+  onpointermove?: (e: FederatedPointerEvent) => void;
+  onpointerup?: (e: FederatedPointerEvent) => void;
 }
 
 export interface PixiComponentViewportProps extends ViewportProps {
-  app: PIXI.Application;
+  app: Application;
 }
+extend({ Viewport })
 
+  /*
 const PixiComponentViewport = PixiComponent("Viewport", {
   create: (props: PixiComponentViewportProps) => {
     const { app, onpointermove, onpointerup } = props
@@ -41,9 +55,32 @@ const PixiComponentViewport = PixiComponent("Viewport", {
   }
 });
 
-const Viewport = (props: ViewportProps) => {
-  const app = useApp();
-  return <PixiComponentViewport app={app} {...props} />;
+   */
+const PixBimViewport = (props: ViewportProps) => {
+  const { app } = useApplication();
+  const { boundingBox, onpointerup, onpointermove } = props;
+  const { renderer } = app;
+  const viewportRef = useRef<ViewportType>(null);
+  const { ticker } = app;
+  useEffect(() => {
+    if (viewportRef.current) {
+      viewportRef.current.drag().pinch().wheel()
+      if (onpointermove) {
+        viewportRef.current.on('pointermove', onpointermove);
+      }
+      if (onpointerup) {
+        viewportRef.current.on('pointerup', onpointerup);
+      }
+      if (boundingBox) {
+        const { x, y, width, height } = boundingBox;
+        viewportRef.current.ensureVisible(x, y, width, height, true);
+      }
+    }
+  }, [boundingBox, onpointerup, onpointermove]);
+  if (!app.renderer) {
+    return 
+  }
+  return <viewport ref={viewportRef} events={renderer.events} ticker={ticker} {...props} pointermove={() => console.log('hej')} />
 };
 
-export default Viewport;
+export default PixBimViewport;
